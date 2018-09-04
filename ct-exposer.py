@@ -9,7 +9,6 @@ from gevent.pool import Pool
 urllib3.disable_warnings(urllib3.exceptions.InsecureRequestWarning)
 requests.packages.urllib3.disable_warnings()
                 
-domain = sys.argv[1]
 domainsFound = {} 
 domainsNotFound = {}
 
@@ -74,4 +73,5 @@ if __name__ == '__main__':
     if len(sys.argv) != 2:
     	print("Usage: python ct-exposer.py domain.com")
     	sys.exit(1) 
+    domain = sys.argv[1]
     main(domain)
