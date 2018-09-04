@@ -40,7 +40,7 @@ def resolve(domain):
         return(domain,'none')
 
 def printDomains(domains):
-    for domain in domains:
+    for domain in sorted(domains):
         print("%s\t%s" % (domains[domain], domain))
 
 def collectResponse(domain):
