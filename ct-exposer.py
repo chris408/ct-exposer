@@ -77,6 +77,5 @@ if __name__ == '__main__':
     if len(sys.argv) != 2:
     	print("Usage: python ct-exposer.py domain.com")
     	sys.exit(1) 
-    domain = sys.argv[1]
-    main(domain)
+    main(sys.argv[1])
 
