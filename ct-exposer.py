@@ -9,11 +9,9 @@ from gevent.pool import Pool
 urllib3.disable_warnings(urllib3.exceptions.InsecureRequestWarning)
 requests.packages.urllib3.disable_warnings()
                 
-domainsFound = {} 
-domainsNotFound = {}
-
 def main(domain):
-    global domainsFound, domainsNotFound
+    domainsFound = {}
+    domainsNotFound = {}
     print("[+]: Downloading domain list...")
     response = collectResponse(domain)
     print("[+]: Download of domain list complete.")
@@ -21,9 +19,16 @@ def main(domain):
     print("[+]: Parsed %s domain(s) from list." % len(domains))
     
     pool = Pool(15)
-    for domain in domains:
-        pool.spawn(resolve, domain)
+    greenlets = [pool.spawn(resolve, domain) for domain in domains]
     pool.join(timeout=1)
+    for greenlet in greenlets:
+        result=greenlet.value
+        if (result):
+            for ip in result.values():
+                if ip != 'none':
+                    domainsFound.update(result)
+                else:
+                    domainsNotFound.update(result)
 
     print("\n[+]: Domains found:")
     printDomains(domainsFound)
@@ -31,14 +36,13 @@ def main(domain):
     printDomains(domainsNotFound)
 
 def resolve(domain):
-    global domainsFound, domainsNotFound
     try:
-        domainsFound[domain] =  socket.gethostbyname(domain)
+        return({domain:socket.gethostbyname(domain)})
     except:
-        domainsNotFound[domain] = 'none'
+        return({domain:"none"})
 
 def printDomains(domains):
-    for domain in domains:
+    for domain in sorted(domains):
         print("%s\t%s" % (domains[domain], domain))
 
 def collectResponse(domain):
@@ -73,5 +77,5 @@ if __name__ == '__main__':
     if len(sys.argv) != 2:
     	print("Usage: python ct-exposer.py domain.com")
     	sys.exit(1) 
-    domain = sys.argv[1]
-    main(domain)
+    main(sys.argv[1])
+
