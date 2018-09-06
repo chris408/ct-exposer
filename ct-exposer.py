@@ -9,9 +9,6 @@ from gevent.pool import Pool
 urllib3.disable_warnings(urllib3.exceptions.InsecureRequestWarning)
 requests.packages.urllib3.disable_warnings()
                 
-domainsFound = {} 
-domainsNotFound = {}
-
 def main(domain):
     domainsFound = {}
     domainsNotFound = {}
@@ -25,11 +22,13 @@ def main(domain):
     greenlets = [pool.spawn(resolve, domain) for domain in domains]
     pool.join(timeout=1)
     for greenlet in greenlets:
-        val=greenlet.value
-        if val[1] != 'none':
-            domainsFound[val[0]] = val[1]
-        else:
-            domainsNotFound[val[0]] = val[1]
+        result=greenlet.value
+        if (result):
+            for ip in result.values():
+                if ip != 'none':
+                    domainsFound.update(result)
+                else:
+                    domainsNotFound.update(result)
 
     print("\n[+]: Domains found:")
     printDomains(domainsFound)
@@ -38,9 +37,9 @@ def main(domain):
 
 def resolve(domain):
     try:
-        return(domain,socket.gethostbyname(domain))
+        return({domain:socket.gethostbyname(domain)})
     except:
-        return(domain,'none')
+        return({domain:"none"})
 
 def printDomains(domains):
     for domain in sorted(domains):
