@@ -2,6 +2,7 @@ import sys
 import requests
 import urllib3
 import re
+import argparse
 import gevent
 from gevent import socket
 from gevent.pool import Pool
@@ -9,41 +10,54 @@ from gevent.pool import Pool
 urllib3.disable_warnings(urllib3.exceptions.InsecureRequestWarning)
 requests.packages.urllib3.disable_warnings()
                 
-def main(domain):
+def main(domain, outputStyle):
     domainsFound = {}
     domainsNotFound = {}
-    print("[+]: Downloading domain list...")
+    if (not outputStyle):
+        print("[+]: Downloading domain list...")
     response = collectResponse(domain)
-    print("[+]: Download of domain list complete.")
+    if (not outputStyle):
+        print("[+]: Download of domain list complete.")
     domains = collectDomains(response)
-    print("[+]: Parsed %s domain(s) from list." % len(domains))
+    if (not outputStyle):
+        print("[+]: Parsed %s domain(s) from list." % len(domains))
     
     pool = Pool(15)
     greenlets = [pool.spawn(resolve, domain) for domain in domains]
-    pool.join(timeout=1)
+    pool.join(timeout = 1)
     for greenlet in greenlets:
         result=greenlet.value
         if (result):
             for ip in result.values():
-                if ip != 'none':
+                if ip is not 'none':
                     domainsFound.update(result)
                 else:
                     domainsNotFound.update(result)
 
-    print("\n[+]: Domains found:")
-    printDomains(domainsFound)
-    print("\n[+]: Domains with no DNS record:")
-    printDomains(domainsNotFound)
+    if (outputStyle):
+        printMasscan(domainsFound)
+    else:
+        print("\n[+]: Domains found:")
+        printDomains(domainsFound)
+        print("\n[+]: Domains with no DNS record:")
+        printDomains(domainsNotFound)
 
 def resolve(domain):
     try:
-        return({domain:socket.gethostbyname(domain)})
+        return({domain: socket.gethostbyname(domain)})
     except:
-        return({domain:"none"})
+        return({domain: "none"})
 
 def printDomains(domains):
     for domain in sorted(domains):
         print("%s\t%s" % (domains[domain], domain))
+
+def printMasscan(domains):
+    iplist = set()
+    for domain in domains:
+        iplist.add(domains[domain])
+    for ip in sorted(iplist):
+        print("%s" % (ip))
 
 def collectResponse(domain):
     headers = {'Host': 'ctsearch.entrust.com',
@@ -58,8 +72,6 @@ def collectResponse(domain):
 
     url = 'https://ctsearch.entrust.com/api/v1/certificates?fields=subjectDN&domain=' + domain + '&includeExpired=true&exactMatch=false&limit=5000'
     response = requests.get(url, headers=headers, verify=False)
-    #print(response.status_code)
-    #print(response.text)
     return response
 
 def collectDomains(response):
@@ -74,8 +86,9 @@ def collectDomains(response):
     return domains
 
 if __name__ == '__main__':
-    if len(sys.argv) != 2:
-    	print("Usage: python ct-exposer.py domain.com")
-    	sys.exit(1) 
-    main(sys.argv[1])
+    parser = argparse.ArgumentParser()
+    parser.add_argument("-d", "--domain", type=str, required=True, help="domain to query for CT logs, ex: domain.com")
+    parser.add_argument("-m", "--masscan", default=0, action="store_true", help="output only one resolved IP address per line, useful for masscan IP list import \"-iL\" format.")
+    args = parser.parse_args()
+    main(args.domain, args.masscan)
 
