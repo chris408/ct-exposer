@@ -1,0 +1,9 @@
+#I've commented out the version numbers, just in case something breaks in the future.
+#gevent==1.1.2
+#greenlet==0.4.11
+#requests==2.12.4
+#urllib3==1.19.1
+gevent
+greenlet
+requests
+urllib3
