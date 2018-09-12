@@ -16,7 +16,7 @@ Python3, gevent, requests, and urllib3.
 
 ## Usage
 
-```shell
+```console
 usage: ct-exposer.py [-h] -d DOMAIN [-u] [-m]
 
 optional arguments:
@@ -32,7 +32,7 @@ optional arguments:
 
 ## Example output
 
-```shell
+```console
 python3 ct-exposer.py -d teslamotors.com
 [+]: Downloading domain list...
 [+]: Download of domain list complete.
