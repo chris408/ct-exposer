@@ -14,6 +14,22 @@ ct-exposer will query the CT logs for a given domain, and then try to do DNS loo
 Python3, gevent, requests, and urllib3.
 `pip3 install -r requirements.txt` 
 
+## Usage
+
+```shell
+usage: ct-exposer.py [-h] -d DOMAIN [-u] [-m]
+
+optional arguments:
+  -h, --help            show this help message and exit
+  -d DOMAIN, --domain DOMAIN
+                        domain to query for CT logs, ex: domain.com
+  -u, --urls            ouput results with https:// urls for domains that
+                        resolve, one per line.
+  -m, --masscan         output resolved IP address, one per line. Useful for
+                        masscan IP list import "-iL" format.
+
+```
+
 ## Example output
 
 ```shell

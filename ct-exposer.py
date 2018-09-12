@@ -10,16 +10,16 @@ from gevent.pool import Pool
 urllib3.disable_warnings(urllib3.exceptions.InsecureRequestWarning)
 requests.packages.urllib3.disable_warnings()
                 
-def main(domain, outputStyle):
+def main(domain, masscanOutput, urlOutput):
     domainsFound = {}
     domainsNotFound = {}
-    if (not outputStyle):
+    if (not masscanOutput and not urlOutput):
         print("[+]: Downloading domain list...")
     response = collectResponse(domain)
-    if (not outputStyle):
+    if (not masscanOutput and not urlOutput):
         print("[+]: Download of domain list complete.")
     domains = collectDomains(response)
-    if (not outputStyle):
+    if (not masscanOutput and not urlOutput):
         print("[+]: Parsed %s domain(s) from list." % len(domains))
     
     pool = Pool(15)
@@ -34,9 +34,11 @@ def main(domain, outputStyle):
                 else:
                     domainsNotFound.update(result)
 
-    if (outputStyle):
+    if (urlOutput):
+        printUrls(sorted(domains))
+    if (masscanOutput):
         printMasscan(domainsFound)
-    else:
+    if (not masscanOutput and not urlOutput):
         print("\n[+]: Domains found:")
         printDomains(domainsFound)
         print("\n[+]: Domains with no DNS record:")
@@ -59,6 +61,10 @@ def printMasscan(domains):
     for ip in sorted(iplist):
         print("%s" % (ip))
 
+def printUrls(domains):
+    for domain in domains:
+        print("https://%s" % domain)
+
 def collectResponse(domain):
     headers = {'Host': 'ctsearch.entrust.com',
 	       'User-Agent': 'Mozilla/5.0 (Windows NT 6.1; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/62.0.3202.62 Safari/537.36',
@@ -80,7 +86,7 @@ def collectDomains(response):
     match = re.findall(restring, response.text)
     if match:
         for domain in match:
-            #The following line is meant to avoid adding wildcard domains, as these will not resolve.
+            #The following line avoids adding wildcard domains, as they will not resolve.
             if((domain[0] not in domains) and not (re.search("^\*\.", domain[0]))):
                 domains.append(domain[0])
     return domains
@@ -88,7 +94,8 @@ def collectDomains(response):
 if __name__ == '__main__':
     parser = argparse.ArgumentParser()
     parser.add_argument("-d", "--domain", type=str, required=True, help="domain to query for CT logs, ex: domain.com")
-    parser.add_argument("-m", "--masscan", default=0, action="store_true", help="output only one resolved IP address per line, useful for masscan IP list import \"-iL\" format.")
+    parser.add_argument("-u", "--urls", default=0, action="store_true", help="ouput results with https:// urls for domains that resolve, one per line.")
+    parser.add_argument("-m", "--masscan", default=0, action="store_true", help="output resolved IP address, one per line. Useful for masscan IP list import \"-iL\" format.")
     args = parser.parse_args()
-    main(args.domain, args.masscan)
+    main(args.domain, args.masscan, args.urls)
 
