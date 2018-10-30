@@ -3,16 +3,19 @@
 # Discover sub-domains by searching through Certificate Transparency logs
 
 ## What is CT?
+
 Certificate Transparency (CT) is an experimental IETF standard. The goal of it was to allow the public to audit which certificates were created by Certificate Authorities (CA). TLS has a weakness that comes from the large list of CAs that your browser implicitly trusts. If any of those CAs were to maliciously create a new certificate for a domain, your browser would trust it. CT adds benefits to TLS certificate trust: Companies can monitor who is creating certificates for the domains they own. It also allows browsers to verify that the certificate for a given domain is in the public log record.
 
 These logs end up being a gold mine of information for penetration testers and red teams.
 
 ## What can you find with ct-exposer?
-ct-exposer will query the CT logs for a given domain, and then try to do DNS lookups for the domains to see which ones exist in DNS. In my experience, so far, I've found numerous sub-domains that were not located with 'site:domain.com' google searches. Keep in mind that the domains that do not resolve, they can either be old domains, or internal only domains (Ex: you need access to the internal DNS server to resolve them). 
+
+ct-exposer will query the CT logs for a given domain, and then try to do DNS lookups for the domains to see which ones exist in DNS. In my experience, so far, I've found numerous sub-domains that were not located with 'site:domain.com' google searches. Keep in mind that the domains that do not resolve, they can either be old domains, or internal only domains (Ex: you need access to the internal DNS server to resolve them).
 
 ## Requirements
+
 Python3, gevent, requests, and urllib3.
-`pip3 install -r requirements.txt` 
+`pip3 install -r requirements.txt`
 
 ## Usage
 
@@ -27,7 +30,6 @@ optional arguments:
                         resolve, one per line.
   -m, --masscan         output resolved IP address, one per line. Useful for
                         masscan IP list import "-iL" format.
-
 ```
 
 ## Example output
@@ -108,5 +110,4 @@ none	vpn-node0.teslamotors.com
 none	wd.s3.teslamotors.com
 none	www-uat2.teslamotors.com
 none	www45.teslamotors.com
-
 ```
