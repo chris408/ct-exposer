@@ -11,7 +11,7 @@ These logs end up being a gold mine of information for penetration testers and r
 ct-exposer will query the CT logs for a given domain, and then try to do DNS lookups for the domains to see which ones exist in DNS. In my experience, so far, I've found numerous sub-domains that were not located with 'site:domain.com' google searches. Keep in mind that the domains that do not resolve, they can either be old domains, or internal only domains (Ex: you need access to the internal DNS server to resolve them). 
 
 ## Requirements
-Python3, gevent, requests, and urllib3.
+Python3, gevent, and requests.
 `pip3 install -r requirements.txt` 
 
 ## Usage

@@ -2,14 +2,12 @@
 
 import sys
 import requests
-import urllib3
 import re
 import argparse
 import gevent
 from gevent import socket
 from gevent.pool import Pool
 
-urllib3.disable_warnings(urllib3.exceptions.InsecureRequestWarning)
 requests.packages.urllib3.disable_warnings()
                 
 def main(domain, masscanOutput, urlOutput):
