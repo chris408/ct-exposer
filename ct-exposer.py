@@ -29,7 +29,7 @@ def main(domain, masscanOutput, urlOutput):
         result=greenlet.value
         if (result):
             for ip in result.values():
-                if ip is not 'none':
+                if ip != 'none':
                     domainsFound.update(result)
                 else:
                     domainsNotFound.update(result)
