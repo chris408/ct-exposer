@@ -33,10 +33,10 @@ optional arguments:
 ## Example output
 
 ```console
-python3 ct-exposer.py -d teslamotors.com
-[+]: Downloading domain list...
+$ python3 ct-exposer.py -d teslamotors.com
+[+]: Downloading domain list from crt.sh...
 [+]: Download of domain list complete.
-[+]: Parsed 76 domain(s) from list.
+[+]: Parsed 266 domain(s) from list.
 
 [+]: Domains found:
 205.234.27.243	adfs.teslamotors.com
