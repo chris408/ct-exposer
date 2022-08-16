@@ -71,12 +71,9 @@ def printUrls(domains):
 
 
 def collectResponse(domain):
-    headers = {'User-Agent': 'Mozilla/5.0 (Windows NT 6.1; \
-               Win64; x64) AppleWebKit/537.36 (KHTML, like \
-               Gecko) Chrome/62.0.3202.62 Safari/537.36'}
     url = 'https://crt.sh/?q=' + domain + '&output=json'
     try:
-        response = requests.get(url, headers=headers, verify=False)
+        response = requests.get(url, verify=False)
     except:
         print("[!]: Connection to server failed.")
         exit(1)
